@@ -1,6 +1,6 @@
 # soulver-sum-lengths
 
-A small Python wrapper around the [Soulver CLI](https://documentation.soulver.app/cli/) for adding any number of lengths in mixed units.  
+A small Python wrapper around the [Soulver CLI](https://documentation.soulver.app/) for adding any number of lengths in mixed units.  
 It converts and sums your inputs, then prints:
 
 - Decimal inches (to 2 decimal places)
