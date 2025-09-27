@@ -52,15 +52,18 @@ def parse_argv(argv):
     return [norm_units(a) for a in argv]
 
 def soulver_mm_sum(items):
-    expr = "sum (" + " + ".join(items) + ")"
-    p = subprocess.run([SOULVER], input=expr + "\n", capture_output=True, text=True)
+    expr_core = " + ".join(items)
+    soulver_expr = "convert (" + expr_core + ") to millimeters"
+    p = subprocess.run([SOULVER], input=soulver_expr + "\n", capture_output=True, text=True)
     if p.returncode != 0:
         sys.exit(f"Soulver error:\n{p.stderr.strip() or p.stdout.strip()}")
     out = (p.stdout or "").strip().replace("\u2009"," ").replace("\u00a0"," ")
     m = RE_NUM.search(out)
     if not m:
-        sys.exit(f"Could not parse number from: {out!r}")
-    return float(m.group(0)), expr
+        sys.exit(f"Could not parse number from Soulver output: {out!r}")
+    # return numeric + simplified display string
+    return float(m.group(0)), f"sum ({expr_core})"
+
 
 def frac_1_16(x_in: float) -> str:
     sign = "-" if x_in < 0 else ""
