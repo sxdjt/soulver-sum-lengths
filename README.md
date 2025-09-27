@@ -32,7 +32,7 @@ Result:
 You can also pass separate arguments (shell-friendly):
 
 ```bash
-python soulver-sum-lengths.py 2.5in 5.535in 9mm
+python soulver-sum-lengths.py 2.5 5.535 9mm
 ```
 
 Or run interactively:
@@ -40,8 +40,8 @@ Or run interactively:
 ```bash
 python soulver-sum-lengths.py
 Enter lengths (e.g., 2 1/2", 5.535", 9mm). Empty line to finish.
-> 2 1/2"
-> 5.535"
+> 2 1/2
+> 5.535
 > 9mm
 >
 ```
