@@ -61,7 +61,8 @@ Enter lengths (e.g., 2 1/2", 5.535", 9mm). Empty line to finish.
 
 ## Requirements
 
-- [Soulver CLI](https://documentation.soulver.app/cli/) installed and on `PATH`  
+- [Soulver CLI](https://documentation.soulver.app/cli/) installed and on `PATH`
+
   ```bash
   brew install soulver-cli
   ```
@@ -73,7 +74,7 @@ Enter lengths (e.g., 2 1/2", 5.535", 9mm). Empty line to finish.
 Clone and run directly:
 
 ```bash
-git clone https://github.com/yourname/soulver-sum.git
+git clone https://github.com/sxdjt/soulver-sum.git
 cd soulver-sum
 python3 soulver-sum-lengths.py 2in 3in 4mm
 ```
