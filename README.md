@@ -9,6 +9,8 @@ It converts and sums your inputs, then prints:
 
 Supports both **interactive mode** (prompt until blank line) and **command-line arguments**.
 
+Defaults to inches unless otherwise specified.
+
 ---
 
 ## Example
