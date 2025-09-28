@@ -1,5 +1,7 @@
 # soulver-sum-lengths
 
+_Note: sum-lengths.py does the same thing without needing Soulver.  I used Soulver as I love the app in general and wanted to explore the CLI a little._
+
 A small Python wrapper around the [Soulver CLI](https://documentation.soulver.app/) for adding any number of lengths in mixed units.  
 It converts and sums your inputs, then prints:
 
