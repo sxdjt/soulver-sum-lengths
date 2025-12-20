@@ -1,3 +1,5 @@
+[![AI Assisted](https://img.shields.io/badge/AI-Claude%20Code%20Assisted-AAAAAA.svg)](https://claude.ai)
+
 # soulver-sum-lengths
 
 Sum lengths in mixed units using either Soulver CLI or pure Python.
