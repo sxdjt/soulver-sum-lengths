@@ -1,0 +1,25 @@
+[MASTER]
+# Python files to analyze
+ignore=CVS,.git,__pycache__
+
+[MESSAGES CONTROL]
+# Disable specific warnings for this project
+disable=
+    # Module naming - CLI tools use hyphens by convention
+    invalid-name,
+    # Test skeleton has intentional pass statements
+    unnecessary-pass,
+    # soulver-sum-lengths.py is optional/legacy
+    missing-module-docstring,
+    missing-function-docstring,
+    multiple-imports,
+    unreachable,
+    subprocess-run-check
+
+[FORMAT]
+# Maximum line length
+max-line-length=100
+
+[DESIGN]
+# Minimum number of public methods for a class
+min-public-methods=0

@@ -2,7 +2,7 @@
 """
 Sum lengths in mixed units without external dependencies.
 
-Accepts fractions (3 1/2", 1/8"), feet-inches (5' 3 1/2"), 
+Accepts fractions (3 1/2", 1/8"), feet-inches (5' 3 1/2"),
 and mixed units (mm, cm, inches, feet, meters).
 Outputs decimal inches, fractional inches (1/16"), and millimeters.
 """
@@ -12,7 +12,7 @@ import sys
 import shutil
 import subprocess
 from math import gcd
-from typing import List, Tuple, Optional
+from typing import List
 
 
 # Configuration constants
@@ -66,22 +66,22 @@ def parse_number(value_str: str) -> float:
     - Fraction: "1/2"
     - Mixed number: "2 1/2"
     - With sign: "-2 1/2"
-    
+
     Args:
         value_str: String representation of number
-        
+
     Returns:
         Float value
-        
+
     Raises:
         ValueError: If string cannot be parsed
     """
     match = MIXED_NUMBER_PATTERN.match(value_str)
     if not match:
         raise ValueError(f"Cannot parse number: {value_str!r}")
-    
+
     sign = -1.0 if match.group("sign") == "-" else 1.0
-    
+
     # Mixed number: "2 1/2"
     if match.group("whole"):
         whole = int(match.group("whole"))
@@ -90,7 +90,7 @@ def parse_number(value_str: str) -> float:
         if denominator == 0:
             raise ValueError(f"Division by zero in fraction: {value_str!r}")
         return sign * (whole + numerator / denominator)
-    
+
     # Simple fraction: "1/2"
     if match.group("num2"):
         numerator = int(match.group("num2"))
@@ -98,7 +98,7 @@ def parse_number(value_str: str) -> float:
         if denominator == 0:
             raise ValueError(f"Division by zero in fraction: {value_str!r}")
         return sign * (numerator / denominator)
-    
+
     # Decimal or integer
     return sign * float(match.group("float"))
 
@@ -106,76 +106,76 @@ def parse_number(value_str: str) -> float:
 def convert_to_inches(term: str) -> float:
     """
     Convert a length term with optional unit to inches.
-    
+
     Supports: 2.5", 5 feet, 9mm, 2 1/2", etc.
     Defaults to inches if no unit specified.
-    
+
     Args:
         term: Length expression
-        
+
     Returns:
         Length in inches
-        
+
     Raises:
         ValueError: If term cannot be parsed or unit is unsupported
     """
     term = term.strip()
     total_inches = 0.0
     found_any_unit = False
-    
+
     # Find all value+unit pairs in the term
     for match in UNIT_PAIR_PATTERN.finditer(term):
         found_any_unit = True
         value = parse_number(match.group("val"))
         unit = match.group("unit").lower()
-        
+
         # Normalize unicode quote marks
         if unit in ('"', '″'):
             unit = "inches"
         if unit in ("'", "′"):
             unit = "feet"
-        
+
         factor = UNIT_FACTORS.get(unit)
         if factor is None:
             raise ValueError(f"Unsupported unit: {unit}")
-        
+
         total_inches += value * factor
-    
+
     # If no units found, assume inches
     if not found_any_unit:
         total_inches = parse_number(term)
-    
+
     return total_inches
 
 
 def normalize_term_display(term: str) -> str:
     """
     Normalize a term for display by expanding abbreviations.
-    
+
     Examples:
         '2.5"' -> '2.5 inches'
         "5'" -> '5 feet'
         '9mm' -> '9 millimeters'
-    
+
     Args:
         term: Original term
-        
+
     Returns:
         Normalized display string
     """
     normalized = term.strip()
-    
+
     # Replace unicode quotes with word equivalents
     normalized = re.sub(r'[""″]', ' inches', normalized)
     normalized = re.sub(r"['\'′]", ' feet', normalized)
-    
+
     # Expand abbreviations
     normalized = re.sub(r'\b(in|inch|inches)\b', 'inches', normalized, flags=re.I)
     normalized = re.sub(r'\b(ft|foot|feet)\b', 'feet', normalized, flags=re.I)
     normalized = re.sub(r'\b(mm|millimeter[s]?)\b', 'millimeters', normalized, flags=re.I)
     normalized = re.sub(r'\b(cm|centimeter[s]?)\b', 'centimeters', normalized, flags=re.I)
     normalized = re.sub(r'\b(m|meter[s]?)\b', 'meters', normalized, flags=re.I)
-    
+
     # Ensure space between number and unit
     normalized = re.sub(
         r'(\d)(?=\s?(inches|feet|millimeters|centimeters|meters)\b)',
@@ -183,71 +183,70 @@ def normalize_term_display(term: str) -> str:
         normalized,
         flags=re.I
     )
-    
+
     # If no unit found, default to inches
     if not re.search(r'[A-Za-z]', normalized):
         normalized += ' inches'
-    
+
     return normalized
 
 
 def format_fractional_inches(value_inches: float, denominator: int = 16) -> str:
     """
     Format decimal inches as fractional inches.
-    
+
     Examples:
         8.39 -> 8 3/8"
         8.5 -> 8 1/2"
         8.0 -> 8"
-    
+
     Args:
         value_inches: Decimal inches
         denominator: Denominator for fraction (default: 16 for 1/16")
-        
+
     Returns:
         Formatted fractional string
     """
     sign = "-" if value_inches < 0 else ""
     abs_value = abs(value_inches)
-    
+
     whole = int(abs_value)
     numerator = round((abs_value - whole) * denominator)
-    
+
     # Handle rounding up to next whole number
     if numerator == denominator:
         whole += 1
         numerator = 0
-    
+
     # No fraction needed
     if numerator == 0:
         return f'{sign}{whole}"'
-    
+
     # Simplify fraction
     divisor = gcd(numerator, denominator)
     simplified_num = numerator // divisor
     simplified_den = denominator // divisor
-    
+
     # Format based on whether we have a whole number
     if whole:
         return f'{sign}{whole} {simplified_num}/{simplified_den}"'
-    else:
-        return f'{sign}{simplified_num}/{simplified_den}"'
+    return f'{sign}{simplified_num}/{simplified_den}"'
 
 
 def copy_to_clipboard(text: str) -> bool:
     """
     Copy text to system clipboard (macOS only).
-    
+
     Args:
         text: Text to copy
-        
+
     Returns:
         True if successful, False otherwise
     """
     pbcopy_path = shutil.which("pbcopy")
     if not pbcopy_path:
         return False
-    
+
     try:
         subprocess.run(
             [pbcopy_path],
@@ -264,10 +263,10 @@ def copy_to_clipboard(text: str) -> bool:
 def parse_input_args(args: List[str]) -> List[str]:
     """
     Parse command-line arguments or prompt for interactive input.
-    
+
     Args:
         args: Command-line arguments (sys.argv[1:])
-        
+
     Returns:
         List of length terms to sum
     """
@@ -279,23 +278,23 @@ def parse_input_args(args: List[str]) -> List[str]:
             if len(parts) > 1:
                 return parts
         return args
-    
+
     # Interactive mode
     print('Enter lengths (e.g., 2 1/2", 5.535", 9mm). Empty line to finish.')
     values = []
-    
+
     while True:
         try:
             line = input("> ").strip()
         except (EOFError, KeyboardInterrupt):
             print()  # New line after Ctrl+D/Ctrl+C
             break
-        
+
         if not line:
             break
-        
+
         values.append(line)
-    
+
     return values
 
 
@@ -304,15 +303,15 @@ def main():
     try:
         # Parse inputs
         input_terms = parse_input_args(sys.argv[1:])
-        
+
         if not input_terms:
             print("No inputs provided.")
             sys.exit(0)
-        
+
         # Convert all terms to inches and sum
         total_inches = 0.0
         normalized_terms = []
-        
+
         for term in input_terms:
             try:
                 total_inches += convert_to_inches(term)
@@ -320,13 +319,13 @@ def main():
             except ValueError as e:
                 print(f"Error parsing '{term}': {e}", file=sys.stderr)
                 sys.exit(1)
-        
+
         # Calculate outputs
         total_mm = total_inches * MM_PER_INCH
         decimal_str = f'{total_inches:.{DECIMAL_PRECISION}f}"'
         fractional_str = format_fractional_inches(total_inches, FRACTIONAL_DENOMINATOR)
         mm_str = f"{round(total_mm)} mm"
-        
+
         # Display results
         print("\nExpression:")
         print("  sum (" + " + ".join(normalized_terms) + ")")
@@ -334,17 +333,18 @@ def main():
         print(f"  {decimal_str}")
         print(f"  {fractional_str}")
         print(f"  {mm_str}")
-        
+
         # Copy to clipboard
         clipboard_text = f"{decimal_str}\n{fractional_str}\n{mm_str}\n"
         if copy_to_clipboard(clipboard_text):
             # Don't announce - just silently copy
             pass
-        
+
     except KeyboardInterrupt:
         print("\nInterrupted.")
         sys.exit(130)
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-exception-caught
+        # Catch-all for unexpected errors in CLI to avoid stack traces
         print(f"Unexpected error: {e}", file=sys.stderr)
         sys.exit(1)
 
