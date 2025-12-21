@@ -6,9 +6,7 @@ Run with: python3 test_sum_lengths.py
 Or with pytest: pytest test_sum_lengths.py -v
 """
 
-import sys
 import unittest
-from io import StringIO
 
 # Import functions from sum-lengths.py
 import importlib.util
@@ -222,14 +220,14 @@ def run_manual_tests():
     """
     print("Manual Test Cases:")
     print("-" * 50)
-    
+
     test_cases = [
         ('2 1/2" + 5.535" + 9mm', "Should output: 8.39\", 8 3/8\", 213 mm"),
         ('2.5 5.535 9mm', "Should output: 8.39\", 8 3/8\", 213 mm"),
         ('1 foot 6 inches', "Should output: 18\", 1 1/2 feet, 457 mm"),
         ('25.4mm', "Should output: 1\", 1\", 25 mm"),
     ]
-    
+
     for test_input, expected in test_cases:
         print(f"\nInput: {test_input}")
         print(f"Expected: {expected}")
